@@ -5,7 +5,7 @@
       <nuxt />
     </div>
     <footer id="footer">
-      Made with Nuxt
+      Powered by Nuxt
     </footer>
   </div>
 </template>
@@ -19,4 +19,6 @@
   .content {
     flex: 1;
   }
+
+  
 </style>
