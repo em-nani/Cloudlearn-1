@@ -1,0 +1,20 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-nuxttfs-dev-142837-authRole",
+      "UnauthRoleArn": "arn:aws:iam::542876199144:role/amplify-nuxttfs-dev-142837-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::542876199144:role/amplify-nuxttfs-dev-142837-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-nuxttfs-dev-142837-deployment",
+      "UnauthRoleName": "amplify-nuxttfs-dev-142837-unauthRole",
+      "StackName": "amplify-nuxttfs-dev-142837",
+      "StackId": "arn:aws:cloudformation:us-east-1:542876199144:stack/amplify-nuxttfs-dev-142837/24c80c50-9b28-11ec-a6f7-0e3c367d9d25",
+      "AmplifyAppId": "d3hogu7qywghx9"
+    },
+    "categories": {
+      "auth": {
+        "nuxttfseaa2c83e": {}
+      }
+    }
+  }
+}
