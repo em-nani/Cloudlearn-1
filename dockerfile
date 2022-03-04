@@ -16,9 +16,9 @@ RUN npm run build
 
 COPY package.json /usr/src/nuxt-app/
 
-EXPOSE 3000
+EXPOSE 8080
 
 ENV NUXT_HOST=0.0.0.0
-ENV NUXT_PORT=3000
+ENV NUXT_PORT=8080
 
 CMD [ "npm", "start" ]
