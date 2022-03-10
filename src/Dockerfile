@@ -12,13 +12,14 @@ RUN apk add git
 # copy the app, note .dockerignore
 COPY . /usr/src/nuxt-app/
 RUN npm install
-RUN npm run build
+RUN npm install yarn
+
 
 COPY package.json /usr/src/nuxt-app/
 
 EXPOSE 8080
 
 ENV NUXT_HOST=0.0.0.0
-ENV NUXT_PORT=3000
+ENV NUXT_PORT=8080
 
-CMD [ "npm", "start" ]
+CMD [ "node", "index.js" ]
