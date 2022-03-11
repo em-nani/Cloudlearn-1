@@ -1,0 +1,96 @@
+{
+  "auth": {
+    "nuxt5aec96c7": {
+      "service": "Cognito",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [],
+      "customAuth": false,
+      "frontendAuthConfig": {
+        "socialProviders": [],
+        "usernameAttributes": [
+          "EMAIL"
+        ],
+        "signupAttributes": [
+          "EMAIL"
+        ],
+        "passwordProtectionSettings": {
+          "passwordPolicyMinLength": 8,
+          "passwordPolicyCharacters": []
+        },
+        "mfaConfiguration": "OFF",
+        "mfaTypes": [
+          "SMS"
+        ],
+        "verificationMechanisms": [
+          "EMAIL"
+        ]
+      }
+    }
+  },
+  "api": {
+    "nuxt": {
+      "resourceName": "nuxt",
+      "dependsOn": [
+        {
+          "category": "",
+          "resourceName": "NetworkStack",
+          "attributes": [
+            "ClusterName",
+            "VpcId",
+            "VpcCidrBlock",
+            "SubnetIds",
+            "VpcLinkId",
+            "CloudMapNamespaceId"
+          ]
+        }
+      ],
+      "deploymentMechanism": "FULLY_MANAGED",
+      "imageSource": {
+        "type": "TEMPLATE",
+        "template": "graphql-express"
+      },
+      "restrictAccess": false,
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "ElasticContainer",
+      "skipHashing": false,
+      "apiType": "GRAPHQL",
+      "iamAccessUnavailable": true
+    }
+  },
+  "hosting": {
+    "ElasticContainer": {
+      "resourceName": "site",
+      "service": "ElasticContainer",
+      "providerPlugin": "awscloudformation",
+      "domain": "containers.tfs.services",
+      "restrictAccess": false,
+      "category": "hosting",
+      "categoryPolicies": [],
+      "dependsOn": [
+        {
+          "category": "",
+          "resourceName": "NetworkStack",
+          "attributes": [
+            "ClusterName",
+            "VpcId",
+            "VpcCidrBlock",
+            "SubnetIds",
+            "VpcLinkId",
+            "CloudMapNamespaceId"
+          ]
+        }
+      ],
+      "deploymentMechanism": "FULLY_MANAGED",
+      "environmentMap": {},
+      "mutableParametersState": {},
+      "exposedContainer": {
+        "name": "api",
+        "port": 8080
+      },
+      "output": {},
+      "hostedZoneId": "Z07716653GDXJUDL4P879",
+      "iamAccessUnavailable": true
+    }
+  }
+}
