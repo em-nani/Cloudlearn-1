@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1 class="statement">Progress Report. Check back for live updates</h1>
+    <h1 class="statement">Progress Report. Check back for live update</h1>
     <p></p>
     <p class="bodytext">
       

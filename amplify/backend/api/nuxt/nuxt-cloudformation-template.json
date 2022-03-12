@@ -345,7 +345,7 @@
         "Cluster": {
           "Ref": "NetworkStackClusterName"
         },
-        "DesiredCount": 0,
+        "DesiredCount": 1,
         "LaunchType": "FARGATE",
         "NetworkConfiguration": {
           "AwsvpcConfiguration": {
@@ -2191,6 +2191,5 @@
         ]
       }
     }
-  },
-  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"Amplify\",\"createdWith\":\"7.6.22\",\"stackType\":\"api-ElasticContainer\",\"metadata\":{}}"
+  }
 }
