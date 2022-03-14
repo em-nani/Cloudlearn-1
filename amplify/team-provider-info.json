@@ -47,5 +47,29 @@
         }
       }
     }
+  },
+  "developer": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-nuxt-developer-103353-authRole",
+      "UnauthRoleArn": "arn:aws:iam::542876199144:role/amplify-nuxt-developer-103353-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::542876199144:role/amplify-nuxt-developer-103353-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-nuxt-developer-103353-deployment",
+      "UnauthRoleName": "amplify-nuxt-developer-103353-unauthRole",
+      "StackName": "amplify-nuxt-developer-103353",
+      "StackId": "arn:aws:cloudformation:us-east-1:542876199144:stack/amplify-nuxt-developer-103353/c69e90c0-a3a3-11ec-a068-12406c9c8f89",
+      "AmplifyAppId": "d2f05hgds2l5hh"
+    },
+    "categories": {
+      "auth": {
+        "nuxt5aec96c7": {}
+      },
+      "hosting": {
+        "ElasticContainer": {
+          "domain": "containers.tfs.services",
+          "restrictAccess": false
+        }
+      }
+    }
   }
 }

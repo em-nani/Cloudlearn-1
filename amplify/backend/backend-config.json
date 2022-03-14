@@ -56,6 +56,35 @@
       "skipHashing": false,
       "apiType": "GRAPHQL",
       "iamAccessUnavailable": true
+    },
+    "cicd": {
+      "resourceName": "cicd",
+      "dependsOn": [
+        {
+          "category": "",
+          "resourceName": "NetworkStack",
+          "attributes": [
+            "ClusterName",
+            "VpcId",
+            "VpcCidrBlock",
+            "SubnetIds",
+            "VpcLinkId",
+            "CloudMapNamespaceId"
+          ]
+        }
+      ],
+      "deploymentMechanism": "FULLY_MANAGED",
+      "imageSource": {
+        "type": "TEMPLATE",
+        "template": "graphql-express"
+      },
+      "restrictAccess": false,
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "ElasticContainer",
+      "skipHashing": false,
+      "apiType": "GRAPHQL",
+      "iamAccessUnavailable": true
     }
   },
   "hosting": {

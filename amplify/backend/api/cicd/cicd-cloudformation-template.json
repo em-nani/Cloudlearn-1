@@ -16,8 +16,7 @@
       ]
     },
     "ParamZipPath": {
-      "Type": "String",
-      "Default": "site.zip"
+      "Type": "String"
     },
     "NetworkStackClusterName": {
       "Type": "String"
@@ -81,6 +80,24 @@
     }
   },
   "Resources": {
+    "CloudmapService": {
+      "Type": "AWS::ServiceDiscovery::Service",
+      "Properties": {
+        "DnsConfig": {
+          "DnsRecords": [
+            {
+              "TTL": 60,
+              "Type": "SRV"
+            }
+          ],
+          "NamespaceId": {
+            "Ref": "NetworkStackCloudMapNamespaceId"
+          },
+          "RoutingPolicy": "MULTIVALUE"
+        },
+        "Name": "cicd"
+      }
+    },
     "TaskDefinitionTaskRoleFD40A61D": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -171,7 +188,7 @@
             "Name": "api",
             "PortMappings": [
               {
-                "ContainerPort": 8080,
+                "ContainerPort": 3000,
                 "Protocol": "tcp"
               }
             ],
@@ -192,7 +209,7 @@
               {
                 "Ref": "rootStackName"
               },
-              "-site"
+              "-cicd"
             ]
           ]
         },
@@ -303,7 +320,7 @@
               {
                 "Ref": "rootStackName"
               },
-              "-site-api"
+              "-cicd-api"
             ]
           ]
         },
@@ -325,7 +342,7 @@
               {
                 "Ref": "rootStackName"
               },
-              "-hosting-site-api"
+              "-api-cicd-api"
             ]
           ]
         }
@@ -349,20 +366,9 @@
             "CidrIp": {
               "Ref": "NetworkStackVpcCidrBlock"
             },
-            "FromPort": 8080,
+            "FromPort": 3000,
             "IpProtocol": "tcp",
-            "ToPort": 8080
-          },
-          {
-            "FromPort": 8080,
-            "IpProtocol": "tcp",
-            "SourceSecurityGroupId": {
-              "Fn::GetAtt": [
-                "AlbSecurityGroup",
-                "GroupId"
-              ]
-            },
-            "ToPort": 8080
+            "ToPort": 3000
           }
         ],
         "VpcId": {
@@ -378,15 +384,6 @@
         },
         "DesiredCount": 0,
         "LaunchType": "FARGATE",
-        "LoadBalancers": [
-          {
-            "ContainerName": "api",
-            "ContainerPort": 8080,
-            "TargetGroupArn": {
-              "Ref": "TargetGroup"
-            }
-          }
-        ],
         "NetworkConfiguration": {
           "AwsvpcConfiguration": {
             "AssignPublicIp": "ENABLED",
@@ -403,15 +400,23 @@
             }
           }
         },
-        "ServiceName": "site-service-api-8080",
+        "ServiceName": "cicd-service-api-3000",
+        "ServiceRegistries": [
+          {
+            "ContainerName": "api",
+            "ContainerPort": 3000,
+            "RegistryArn": {
+              "Fn::GetAtt": [
+                "CloudmapService",
+                "Arn"
+              ]
+            }
+          }
+        ],
         "TaskDefinition": {
           "Ref": "TaskDefinition"
         }
-      },
-      "DependsOn": [
-        "AlbListener",
-        "AlbListenerRule"
-      ]
+      }
     },
     "ApiPipelineCodeBuildProjectRoleCFB98631": {
       "Type": "AWS::IAM::Role",
@@ -700,7 +705,7 @@
             "CLUSTER_NAME": {
               "Ref": "NetworkStackClusterName"
             },
-            "SERVICE_NAME": "site-service-api-8080"
+            "SERVICE_NAME": "cicd-service-api-3000"
           }
         },
         "Handler": "index.handler",
@@ -1008,7 +1013,7 @@
                   "ClusterName": {
                     "Ref": "NetworkStackClusterName"
                   },
-                  "ServiceName": "site-service-api-8080"
+                  "ServiceName": "cicd-service-api-3000"
                 },
                 "InputArtifacts": [
                   {
@@ -1041,7 +1046,7 @@
               {
                 "Ref": "rootStackName"
               },
-              "-site-service-api-8080"
+              "-cicd-service-api-3000"
             ]
           ]
         }
@@ -1448,259 +1453,781 @@
         "Service"
       ]
     },
-    "Certificate": {
-      "Type": "AWS::CertificateManager::Certificate",
+    "AwaiterCustomEventHandlerServiceRoleCC4D5DBF": {
+      "Type": "AWS::IAM::Role",
       "Properties": {
-        "DomainName": "*.tfs.services",
-        "DomainValidationOptions": [
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
           {
-            "DomainName": "*.tfs.services",
-            "HostedZoneId": "Z07716653GDXJUDL4P879"
-          }
-        ],
-        "ValidationMethod": "DNS"
-      }
-    },
-    "TargetGroup": {
-      "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
-      "Properties": {
-        "HealthCheckIntervalSeconds": 90,
-        "HealthCheckPath": "/",
-        "HealthCheckTimeoutSeconds": 60,
-        "HealthyThresholdCount": 2,
-        "Port": 8080,
-        "Protocol": "HTTP",
-        "TargetType": "ip",
-        "UnhealthyThresholdCount": 2,
-        "VpcId": {
-          "Ref": "NetworkStackVpcId"
-        }
-      }
-    },
-    "AlbSecurityGroup": {
-      "Type": "AWS::EC2::SecurityGroup",
-      "Properties": {
-        "GroupDescription": "ALB Security Group",
-        "SecurityGroupEgress": [
-          {
-            "CidrIp": "0.0.0.0/0",
-            "Description": "Allow all outbound traffic by default",
-            "IpProtocol": "-1"
-          }
-        ],
-        "SecurityGroupIngress": [
-          {
-            "CidrIp": "0.0.0.0/0",
-            "Description": "Allow from anyone on port 443",
-            "FromPort": 443,
-            "IpProtocol": "tcp",
-            "ToPort": 443
-          }
-        ],
-        "VpcId": {
-          "Ref": "NetworkStackVpcId"
-        }
-      }
-    },
-    "LoadBalancer": {
-      "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
-      "Properties": {
-        "LoadBalancerAttributes": [
-          {
-            "Key": "deletion_protection.enabled",
-            "Value": "false"
-          }
-        ],
-        "Scheme": "internet-facing",
-        "SecurityGroups": [
-          {
-            "Fn::GetAtt": [
-              "AlbSecurityGroup",
-              "GroupId"
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
             ]
           }
-        ],
-        "Subnets": {
-          "Ref": "NetworkStackSubnetIds"
-        },
-        "Type": "application"
+        ]
       }
     },
-    "AlbListener": {
-      "Type": "AWS::ElasticLoadBalancingV2::Listener",
+    "AwaiterCustomEventHandler8B7CBA73": {
+      "Type": "AWS::Lambda::Function",
       "Properties": {
-        "DefaultActions": [
-          {
-            "FixedResponseConfig": {
-              "StatusCode": "403"
-            },
-            "Type": "fixed-response"
-          }
-        ],
-        "LoadBalancerArn": {
-          "Ref": "LoadBalancer"
+        "Code": {
+          "ZipFile": "exports.handler = async function({ RequestType, PhysicalResourceId, ResourceProperties }) {\n  switch (RequestType) {\n    case 'Delete':\n    case 'Update':\n      return { PhysicalResourceId };\n  }\n\n  const { pipelineName } = ResourceProperties;\n\n  const result = {\n    PhysicalResourceId: `pipelineawaiter-${pipelineName}`,\n  };\n\n  return result;\n};\n"
         },
-        "Certificates": [
-          {
-            "CertificateArn": {
-              "Ref": "Certificate"
-            }
-          }
-        ],
-        "Port": 443,
-        "Protocol": "HTTPS"
-      }
-    },
-    "AlbListenerRule": {
-      "Type": "AWS::ElasticLoadBalancingV2::ListenerRule",
-      "Properties": {
-        "Actions": [
-          {
-            "Order": 1,
-            "TargetGroupArn": {
-              "Ref": "TargetGroup"
-            },
-            "Type": "forward"
-          }
-        ],
-        "Conditions": [
-          {
-            "Field": "host-header",
-            "HostHeaderConfig": {
-              "Values": [
-                "containers.tfs.services"
-              ]
-            }
-          },
-          {
-            "Field": "http-header",
-            "HttpHeaderConfig": {
-              "HttpHeaderName": "x-cf-token",
-              "Values": [
-                "5f13c33d-f240-4d39-8e7c-5f5d06114db4"
-              ]
-            }
-          }
-        ],
-        "ListenerArn": {
-          "Ref": "AlbListener"
+        "Role": {
+          "Fn::GetAtt": [
+            "AwaiterCustomEventHandlerServiceRoleCC4D5DBF",
+            "Arn"
+          ]
         },
-        "Priority": 1
-      }
+        "Handler": "index.handler",
+        "Runtime": "nodejs12.x",
+        "Timeout": 15
+      },
+      "DependsOn": [
+        "AwaiterCustomEventHandlerServiceRoleCC4D5DBF"
+      ]
     },
-    "Distribution": {
-      "Type": "AWS::CloudFront::Distribution",
+    "AwaiterCustomCompleteHandlerServiceRoleFFF75973": {
+      "Type": "AWS::IAM::Role",
       "Properties": {
-        "DistributionConfig": {
-          "Aliases": [
-            "containers.tfs.services"
-          ],
-          "DefaultCacheBehavior": {
-            "ForwardedValues": {
-              "Cookies": {
-                "Forward": "all"
-              },
-              "Headers": [
-                "*"
-              ],
-              "QueryString": true
-            },
-            "TargetOriginId": "LoadBalancer-origin",
-            "ViewerProtocolPolicy": "redirect-to-https"
-          },
-          "Enabled": true,
-          "HttpVersion": "http2",
-          "IPV6Enabled": true,
-          "Origins": [
+        "AssumeRolePolicyDocument": {
+          "Statement": [
             {
-              "CustomOriginConfig": {
-                "OriginProtocolPolicy": "https-only"
-              },
-              "DomainName": {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "AwaiterCustomCompleteHandlerServiceRoleDefaultPolicyB6596557": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "codepipeline:GetPipeline",
+                "codepipeline:ListPipelineExecutions"
+              ],
+              "Effect": "Allow",
+              "Resource": {
                 "Fn::Join": [
                   "",
                   [
-                    "lb-",
+                    "arn:",
                     {
-                      "Ref": "rootStackName"
+                      "Ref": "AWS::Partition"
                     },
-                    ".tfs.services"
+                    ":codepipeline:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "ApiPipelinePipeline68596884"
+                    }
                   ]
-                ]
-              },
-              "Id": "LoadBalancer-origin",
-              "OriginCustomHeaders": [
-                {
-                  "HeaderName": "x-cf-token",
-                  "HeaderValue": "5f13c33d-f240-4d39-8e7c-5f5d06114db4"
-                }
-              ]
-            }
-          ],
-          "ViewerCertificate": {
-            "AcmCertificateArn": {
-              "Ref": "Certificate"
-            },
-            "MinimumProtocolVersion": "TLSv1.2_2019",
-            "SslSupportMethod": "sni-only"
-          }
-        }
-      }
-    },
-    "RecordSetGroup": {
-      "Type": "AWS::Route53::RecordSetGroup",
-      "Properties": {
-        "HostedZoneId": "Z07716653GDXJUDL4P879",
-        "RecordSets": [
-          {
-            "AliasTarget": {
-              "DNSName": {
-                "Fn::GetAtt": [
-                  "LoadBalancer",
-                  "DNSName"
-                ]
-              },
-              "HostedZoneId": {
-                "Fn::GetAtt": [
-                  "LoadBalancer",
-                  "CanonicalHostedZoneID"
                 ]
               }
             },
-            "Name": {
-              "Fn::Join": [
-                "",
-                [
-                  "lb-",
-                  {
-                    "Ref": "rootStackName"
-                  },
-                  ".tfs.services"
-                ]
-              ]
-            },
-            "Type": "A"
-          },
+            {
+              "Action": "cloudformation:DescribeStacks",
+              "Effect": "Allow",
+              "Resource": {
+                "Ref": "AWS::StackId"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "AwaiterCustomCompleteHandlerServiceRoleDefaultPolicyB6596557",
+        "Roles": [
           {
-            "AliasTarget": {
-              "DNSName": {
-                "Fn::GetAtt": [
-                  "Distribution",
-                  "DomainName"
-                ]
-              },
-              "HostedZoneId": "Z2FDTNDATAQYW2"
-            },
-            "Name": "containers.tfs.services",
-            "Type": "A"
+            "Ref": "AwaiterCustomCompleteHandlerServiceRoleFFF75973"
           }
         ]
+      }
+    },
+    "AwaiterCustomCompleteHandler21A45EDC": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "ZipFile": "const AWS = require('aws-sdk');\n\nconst stageName = 'Source';\nconst actionName = 'Source';\n\nconst codePipeline = new AWS.CodePipeline();\nconst cloudFormation = new AWS.CloudFormation();\n\nexports.handler = async function({ RequestType, ResourceProperties, StackId }) {\n  const { pipelineName, artifactBucketName, artifactKey, deploymentMechanism } = ResourceProperties;\n\n  console.log('Properties', ResourceProperties);\n\n  switch (RequestType) {\n    case 'Delete':\n      return { IsComplete: true };\n    case 'Update':\n      const [, StackName] = StackId.split('/');\n      const { Stacks } = await cloudFormation.describeStacks({ StackName }).promise();\n      const [{ StackStatus }] = Stacks;\n\n      if (StackStatus.includes('ROLLBACK')) {\n        return { IsComplete: true };\n      }\n  }\n\n  let stages;\n\n  try {\n    const { pipeline } = await codePipeline.getPipeline({ name: pipelineName }).promise();\n\n    ({ stages } = pipeline);\n  } catch (error) {\n    const { code } = error;\n\n    switch (code) {\n      case 'PipelineNotFoundException':\n        console.warn(error);\n\n        return {\n          IsComplete: false,\n        };\n      default:\n        throw error;\n    }\n  }\n\n  const stage = stages.find(({ name }) => name === stageName);\n\n  if (stage === undefined) {\n    throw new Error(`There is no stage named \"${stageName}\" in the \"${pipelineName}\" pipeline`);\n  }\n\n  const action = stage.actions.find(({ name }) => name === actionName);\n\n  if (action === undefined) {\n    throw new Error(`There is no action named \"${actionName}\" in the \"${stageName}\" stage of the \"${pipelineName}\" pipeline`);\n  }\n\n  const {\n    configuration,\n    configuration: { S3Bucket, S3ObjectKey },\n  } = action;\n\n  if (deploymentMechanism === 'FULLY_MANAGED') {\n    if (S3Bucket !== artifactBucketName || S3ObjectKey !== artifactKey) {\n      console.warn(\n        `Bucket \"${artifactBucketName}\" and key \"${artifactKey}\" dont match the \"${actionName}\" action configuration ${JSON.stringify(\n          configuration,\n        )}`,\n      );\n\n      return {\n        IsComplete: false,\n      };\n    }\n  }\n\n  let execution;\n\n  try {\n    const { pipelineExecutionSummaries } = await codePipeline.listPipelineExecutions({ pipelineName }).promise();\n\n    [execution] = pipelineExecutionSummaries;\n  } catch (error) {\n    console.warn(error);\n\n    return {\n      IsComplete: false,\n    };\n  }\n\n  console.log(execution);\n\n  const { status } = execution || {};\n\n  let IsComplete = false;\n\n  switch (status) {\n    case 'Failed':\n    case 'Stopped':\n      throw new Error(\"The execution didn't succeed\");\n    case 'Succeeded':\n      IsComplete = true;\n  }\n\n  return { IsComplete };\n};\n"
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "AwaiterCustomCompleteHandlerServiceRoleFFF75973",
+            "Arn"
+          ]
+        },
+        "Handler": "index.handler",
+        "Runtime": "nodejs12.x",
+        "Timeout": 15
+      },
+      "DependsOn": [
+        "AwaiterCustomCompleteHandlerServiceRoleDefaultPolicyB6596557",
+        "AwaiterCustomCompleteHandlerServiceRoleFFF75973"
+      ]
+    },
+    "AwaiterMyProviderframeworkonEventServiceRole3DA490A7": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "AwaiterMyProviderframeworkonEventServiceRoleDefaultPolicy41437CAE": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "AwaiterCustomEventHandler8B7CBA73",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "AwaiterCustomCompleteHandler21A45EDC",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": "states:StartExecution",
+              "Effect": "Allow",
+              "Resource": {
+                "Ref": "AwaiterMyProviderwaiterstatemachineCF09BEC8"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "AwaiterMyProviderframeworkonEventServiceRoleDefaultPolicy41437CAE",
+        "Roles": [
+          {
+            "Ref": "AwaiterMyProviderframeworkonEventServiceRole3DA490A7"
+          }
+        ]
+      }
+    },
+    "AwaiterMyProviderframeworkonEventB703D418": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "deploymentBucketName"
+          },
+          "S3Key": {
+            "Ref": "awaiterS3Key"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "AwaiterMyProviderframeworkonEventServiceRole3DA490A7",
+            "Arn"
+          ]
+        },
+        "Description": "AWS CDK resource provider framework - onEvent (ContainersStack/AwaiterMyProvider)",
+        "Environment": {
+          "Variables": {
+            "USER_ON_EVENT_FUNCTION_ARN": {
+              "Fn::GetAtt": [
+                "AwaiterCustomEventHandler8B7CBA73",
+                "Arn"
+              ]
+            },
+            "USER_IS_COMPLETE_FUNCTION_ARN": {
+              "Fn::GetAtt": [
+                "AwaiterCustomCompleteHandler21A45EDC",
+                "Arn"
+              ]
+            },
+            "WAITER_STATE_MACHINE_ARN": {
+              "Ref": "AwaiterMyProviderwaiterstatemachineCF09BEC8"
+            }
+          }
+        },
+        "Handler": "framework.onEvent",
+        "Runtime": "nodejs14.x",
+        "Timeout": 900
+      },
+      "DependsOn": [
+        "AwaiterMyProviderframeworkonEventServiceRoleDefaultPolicy41437CAE",
+        "AwaiterMyProviderframeworkonEventServiceRole3DA490A7"
+      ]
+    },
+    "AwaiterMyProviderframeworkisCompleteServiceRole2C6A7CF0": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "AwaiterMyProviderframeworkisCompleteServiceRoleDefaultPolicyA36828FB": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "AwaiterCustomEventHandler8B7CBA73",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "AwaiterCustomCompleteHandler21A45EDC",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "AwaiterMyProviderframeworkisCompleteServiceRoleDefaultPolicyA36828FB",
+        "Roles": [
+          {
+            "Ref": "AwaiterMyProviderframeworkisCompleteServiceRole2C6A7CF0"
+          }
+        ]
+      }
+    },
+    "AwaiterMyProviderframeworkisComplete18658065": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "deploymentBucketName"
+          },
+          "S3Key": {
+            "Ref": "awaiterS3Key"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "AwaiterMyProviderframeworkisCompleteServiceRole2C6A7CF0",
+            "Arn"
+          ]
+        },
+        "Description": "AWS CDK resource provider framework - isComplete (ContainersStack/AwaiterMyProvider)",
+        "Environment": {
+          "Variables": {
+            "USER_ON_EVENT_FUNCTION_ARN": {
+              "Fn::GetAtt": [
+                "AwaiterCustomEventHandler8B7CBA73",
+                "Arn"
+              ]
+            },
+            "USER_IS_COMPLETE_FUNCTION_ARN": {
+              "Fn::GetAtt": [
+                "AwaiterCustomCompleteHandler21A45EDC",
+                "Arn"
+              ]
+            }
+          }
+        },
+        "Handler": "framework.isComplete",
+        "Runtime": "nodejs14.x",
+        "Timeout": 900
+      },
+      "DependsOn": [
+        "AwaiterMyProviderframeworkisCompleteServiceRoleDefaultPolicyA36828FB",
+        "AwaiterMyProviderframeworkisCompleteServiceRole2C6A7CF0"
+      ]
+    },
+    "AwaiterMyProviderframeworkonTimeoutServiceRole40F88C6A": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "AwaiterMyProviderframeworkonTimeoutServiceRoleDefaultPolicyCB302F22": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "AwaiterCustomEventHandler8B7CBA73",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "AwaiterCustomCompleteHandler21A45EDC",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "AwaiterMyProviderframeworkonTimeoutServiceRoleDefaultPolicyCB302F22",
+        "Roles": [
+          {
+            "Ref": "AwaiterMyProviderframeworkonTimeoutServiceRole40F88C6A"
+          }
+        ]
+      }
+    },
+    "AwaiterMyProviderframeworkonTimeoutCC4166A7": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "deploymentBucketName"
+          },
+          "S3Key": {
+            "Ref": "awaiterS3Key"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "AwaiterMyProviderframeworkonTimeoutServiceRole40F88C6A",
+            "Arn"
+          ]
+        },
+        "Description": "AWS CDK resource provider framework - onTimeout (ContainersStack/AwaiterMyProvider)",
+        "Environment": {
+          "Variables": {
+            "USER_ON_EVENT_FUNCTION_ARN": {
+              "Fn::GetAtt": [
+                "AwaiterCustomEventHandler8B7CBA73",
+                "Arn"
+              ]
+            },
+            "USER_IS_COMPLETE_FUNCTION_ARN": {
+              "Fn::GetAtt": [
+                "AwaiterCustomCompleteHandler21A45EDC",
+                "Arn"
+              ]
+            }
+          }
+        },
+        "Handler": "framework.onTimeout",
+        "Runtime": "nodejs14.x",
+        "Timeout": 900
+      },
+      "DependsOn": [
+        "AwaiterMyProviderframeworkonTimeoutServiceRoleDefaultPolicyCB302F22",
+        "AwaiterMyProviderframeworkonTimeoutServiceRole40F88C6A"
+      ]
+    },
+    "AwaiterMyProviderwaiterstatemachineRoleD2CF7945": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "states.",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ".amazonaws.com"
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "AwaiterMyProviderwaiterstatemachineRoleDefaultPolicy17602DC1": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "AwaiterMyProviderframeworkisComplete18658065",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "AwaiterMyProviderframeworkonTimeoutCC4166A7",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "AwaiterMyProviderwaiterstatemachineRoleDefaultPolicy17602DC1",
+        "Roles": [
+          {
+            "Ref": "AwaiterMyProviderwaiterstatemachineRoleD2CF7945"
+          }
+        ]
+      }
+    },
+    "AwaiterMyProviderwaiterstatemachineCF09BEC8": {
+      "Type": "AWS::StepFunctions::StateMachine",
+      "Properties": {
+        "DefinitionString": {
+          "Fn::Join": [
+            "",
+            [
+              "{\"StartAt\":\"framework-isComplete-task\",\"States\":{\"framework-isComplete-task\":{\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":10,\"MaxAttempts\":180,\"BackoffRate\":1}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"framework-onTimeout-task\"}],\"Type\":\"Task\",\"Resource\":\"",
+              {
+                "Fn::GetAtt": [
+                  "AwaiterMyProviderframeworkisComplete18658065",
+                  "Arn"
+                ]
+              },
+              "\"},\"framework-onTimeout-task\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"",
+              {
+                "Fn::GetAtt": [
+                  "AwaiterMyProviderframeworkonTimeoutCC4166A7",
+                  "Arn"
+                ]
+              },
+              "\"}}}"
+            ]
+          ]
+        },
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "AwaiterMyProviderwaiterstatemachineRoleD2CF7945",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "AwaiterMyProviderwaiterstatemachineRoleDefaultPolicy17602DC1",
+        "AwaiterMyProviderwaiterstatemachineRoleD2CF7945"
+      ]
+    },
+    "DeploymentAwaiter": {
+      "Type": "AWS::CloudFormation::CustomResource",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "AwaiterMyProviderframeworkonEventB703D418",
+            "Arn"
+          ]
+        },
+        "artifactBucketName": {
+          "Ref": "deploymentBucketName"
+        },
+        "artifactKey": {
+          "Ref": "ParamZipPath"
+        },
+        "pipelineName": {
+          "Ref": "ApiPipelinePipeline68596884"
+        },
+        "deploymentMechanism": "FULLY_MANAGED"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "Api": {
+      "Type": "AWS::ApiGatewayV2::Api",
+      "Properties": {
+        "CorsConfiguration": {
+          "AllowHeaders": [
+            "*"
+          ],
+          "AllowMethods": [
+            "DELETE",
+            "GET",
+            "HEAD",
+            "OPTIONS",
+            "PATCH",
+            "POST",
+            "PUT"
+          ],
+          "AllowOrigins": [
+            "*"
+          ]
+        },
+        "Name": {
+          "Fn::Join": [
+            "",
+            [
+              {
+                "Ref": "rootStackName"
+              },
+              "-cicd"
+            ]
+          ]
+        },
+        "ProtocolType": "HTTP"
+      }
+    },
+    "Stage": {
+      "Type": "AWS::ApiGatewayV2::Stage",
+      "Properties": {
+        "ApiId": {
+          "Ref": "Api"
+        },
+        "StageName": "$default",
+        "AutoDeploy": true
+      }
+    },
+    "ANYIntegration": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "Api"
+        },
+        "IntegrationType": "HTTP_PROXY",
+        "ConnectionId": {
+          "Ref": "NetworkStackVpcLinkId"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationUri": {
+          "Fn::GetAtt": [
+            "CloudmapService",
+            "Arn"
+          ]
+        },
+        "PayloadFormatVersion": "1.0"
+      }
+    },
+    "Authorizer": {
+      "Type": "AWS::ApiGatewayV2::Authorizer",
+      "Properties": {
+        "ApiId": {
+          "Ref": "Api"
+        },
+        "AuthorizerType": "JWT",
+        "Name": "cicdAuthorizer",
+        "IdentitySource": [
+          "$request.header.Authorization"
+        ],
+        "JwtConfiguration": {
+          "Audience": [],
+          "Issuer": {
+            "Fn::Join": [
+              "",
+              [
+                "https://cognito-idp.",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ".amazonaws.com/"
+              ]
+            ]
+          }
+        }
+      },
+      "Condition": "isAuthCondition"
+    },
+    "DefaultRoute": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "Api"
+        },
+        "RouteKey": "$default",
+        "AuthorizationScopes": [],
+        "AuthorizationType": {
+          "Fn::If": [
+            "isAuthCondition",
+            "JWT",
+            "NONE"
+          ]
+        },
+        "AuthorizerId": {
+          "Fn::If": [
+            "isAuthCondition",
+            {
+              "Ref": "Authorizer"
+            },
+            ""
+          ]
+        },
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "ANYIntegration"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    "OptionsRoute": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "Api"
+        },
+        "RouteKey": "OPTIONS /{proxy+}",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "ANYIntegration"
+              }
+            ]
+          ]
+        }
       }
     }
   },
   "Outputs": {
     "ServiceName": {
-      "Value": "site-service-api-8080"
+      "Value": "cicd-service-api-3000"
     },
     "ClusterName": {
       "Value": {
@@ -1715,7 +2242,7 @@
             {
               "Ref": "rootStackName"
             },
-            "-site-service-api-8080"
+            "-cicd-service-api-3000"
           ]
         ]
       }
@@ -1723,57 +2250,14 @@
     "ContainerNames": {
       "Value": "api"
     },
-    "PipelineUrl": {
-      "Value": {
-        "Fn::Join": [
-          "",
-          [
-            "https://",
-            {
-              "Ref": "AWS::Region"
-            },
-            ".console.aws.amazon.com/codesuite/codepipeline/pipelines/",
-            {
-              "Ref": "rootStackName"
-            },
-            "-site-service-api-8080/view"
-          ]
-        ]
-      }
-    },
-    "LoadBalancerAliasDomainName": {
+    "GraphQLAPIEndpointOutput": {
       "Value": {
         "Fn::GetAtt": [
-          "LoadBalancer",
-          "DNSName"
+          "Api",
+          "ApiEndpoint"
         ]
       }
-    },
-    "LoadBalancerCnameDomainName": {
-      "Value": {
-        "Fn::Join": [
-          "",
-          [
-            "lb-",
-            {
-              "Ref": "rootStackName"
-            },
-            ".tfs.services"
-          ]
-        ]
-      }
-    },
-    "CloudfrontDistributionAliasDomainName": {
-      "Value": {
-        "Fn::GetAtt": [
-          "Distribution",
-          "DomainName"
-        ]
-      }
-    },
-    "CloudfrontDistributionCnameDomainName": {
-      "Value": "containers.tfs.services"
     }
   },
-  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"Amplify\",\"createdWith\":\"7.6.22\",\"stackType\":\"hosting-ElasticContainer\",\"metadata\":{}}"
+  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"Amplify\",\"createdWith\":\"7.6.22\",\"stackType\":\"api-ElasticContainer\",\"metadata\":{}}"
 }

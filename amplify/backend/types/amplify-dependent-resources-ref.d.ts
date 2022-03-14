@@ -17,6 +17,13 @@ export type AmplifyDependentResourcesAttributes = {
             "PipelineName": "string",
             "ContainerNames": "string",
             "GraphQLAPIEndpointOutput": "string"
+        },
+        "cicd": {
+            "ServiceName": "string",
+            "ClusterName": "string",
+            "PipelineName": "string",
+            "ContainerNames": "string",
+            "GraphQLAPIEndpointOutput": "string"
         }
     },
     "hosting": {
