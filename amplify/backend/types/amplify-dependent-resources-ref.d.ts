@@ -1,6 +1,6 @@
 export type AmplifyDependentResourcesAttributes = {
     "auth": {
-        "nuxt214b03c6": {
+        "nuxteba7f827": {
             "IdentityPoolId": "string",
             "IdentityPoolName": "string",
             "UserPoolId": "string",
@@ -8,6 +8,13 @@ export type AmplifyDependentResourcesAttributes = {
             "UserPoolName": "string",
             "AppClientIDWeb": "string",
             "AppClientID": "string"
+        }
+    },
+    "api": {
+        "cicd": {
+            "GraphQLAPIKeyOutput": "string",
+            "GraphQLAPIIdOutput": "string",
+            "GraphQLAPIEndpointOutput": "string"
         }
     },
     "hosting": {
@@ -21,22 +28,6 @@ export type AmplifyDependentResourcesAttributes = {
             "LoadBalancerCnameDomainName": "string",
             "CloudfrontDistributionAliasDomainName": "string",
             "CloudfrontDistributionCnameDomainName": "string"
-        }
-    },
-    "api": {
-        "containerc1766edf": {
-            "ServiceName": "string",
-            "ClusterName": "string",
-            "PipelineName": "string",
-            "ContainerNames": "string",
-            "GraphQLAPIEndpointOutput": "string"
-        },
-        "test": {
-            "ServiceName": "string",
-            "ClusterName": "string",
-            "PipelineName": "string",
-            "ContainerNames": "string",
-            "GraphQLAPIEndpointOutput": "string"
         }
     }
 }

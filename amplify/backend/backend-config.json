@@ -1,6 +1,6 @@
 {
   "auth": {
-    "nuxt214b03c6": {
+    "nuxteba7f827": {
       "service": "Cognito",
       "providerPlugin": "awscloudformation",
       "dependsOn": [],
@@ -24,6 +24,23 @@
         "verificationMechanisms": [
           "EMAIL"
         ]
+      }
+    }
+  },
+  "api": {
+    "cicd": {
+      "service": "AppSync",
+      "providerPlugin": "awscloudformation",
+      "output": {
+        "authConfig": {
+          "defaultAuthentication": {
+            "authenticationType": "API_KEY",
+            "apiKeyConfig": {
+              "apiKeyExpirationDays": 7
+            }
+          },
+          "additionalAuthenticationProviders": []
+        }
       }
     }
   },
@@ -55,69 +72,10 @@
       "mutableParametersState": {},
       "exposedContainer": {
         "name": "api",
-        "port": 80
+        "port": 8080
       },
       "output": {},
       "hostedZoneId": "Z0787088VLUOITMYB86B",
-      "iamAccessUnavailable": true
-    }
-  },
-  "api": {
-    "containerc1766edf": {
-      "resourceName": "containerc1766edf",
-      "dependsOn": [
-        {
-          "category": "",
-          "resourceName": "NetworkStack",
-          "attributes": [
-            "ClusterName",
-            "VpcId",
-            "VpcCidrBlock",
-            "SubnetIds",
-            "VpcLinkId",
-            "CloudMapNamespaceId"
-          ]
-        }
-      ],
-      "deploymentMechanism": "FULLY_MANAGED",
-      "imageSource": {
-        "type": "TEMPLATE",
-        "template": "graphql-express"
-      },
-      "restrictAccess": false,
-      "build": true,
-      "providerPlugin": "awscloudformation",
-      "service": "ElasticContainer",
-      "skipHashing": false,
-      "apiType": "GRAPHQL",
-      "iamAccessUnavailable": true
-    },
-    "test": {
-      "resourceName": "test",
-      "dependsOn": [
-        {
-          "category": "",
-          "resourceName": "NetworkStack",
-          "attributes": [
-            "ClusterName",
-            "VpcId",
-            "VpcCidrBlock",
-            "SubnetIds",
-            "VpcLinkId",
-            "CloudMapNamespaceId"
-          ]
-        }
-      ],
-      "deploymentMechanism": "FULLY_MANAGED",
-      "imageSource": {
-        "type": "CUSTOM"
-      },
-      "restrictAccess": false,
-      "build": true,
-      "providerPlugin": "awscloudformation",
-      "service": "ElasticContainer",
-      "skipHashing": false,
-      "apiType": "GRAPHQL",
       "iamAccessUnavailable": true
     }
   }

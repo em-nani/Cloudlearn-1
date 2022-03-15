@@ -1451,11 +1451,11 @@
     "Certificate": {
       "Type": "AWS::CertificateManager::Certificate",
       "Properties": {
-        "DomainName": "*.faderpro.com",
+        "DomainName": "*.tfs.services",
         "DomainValidationOptions": [
           {
-            "DomainName": "*.faderpro.com",
-            "HostedZoneId": "Z0787088VLUOITMYB86B"
+            "DomainName": "*.tfs.services",
+            "HostedZoneId": "Z033992019YVMJI94FN9V"
           }
         ],
         "ValidationMethod": "DNS"
@@ -1568,7 +1568,7 @@
             "Field": "host-header",
             "HostHeaderConfig": {
               "Values": [
-                "container.faderpro.com"
+                "nuxt.tfs.services"
               ]
             }
           },
@@ -1577,7 +1577,7 @@
             "HttpHeaderConfig": {
               "HttpHeaderName": "x-cf-token",
               "Values": [
-                "efd7cd48-dc97-426b-a091-4cbe0d81447b"
+                "347718ee-e76b-488a-961d-209f563eff79"
               ]
             }
           }
@@ -1593,7 +1593,7 @@
       "Properties": {
         "DistributionConfig": {
           "Aliases": [
-            "container.faderpro.com"
+            "nuxt.tfs.services"
           ],
           "DefaultCacheBehavior": {
             "ForwardedValues": {
@@ -1624,7 +1624,7 @@
                     {
                       "Ref": "rootStackName"
                     },
-                    ".faderpro.com"
+                    ".tfs.services"
                   ]
                 ]
               },
@@ -1632,7 +1632,7 @@
               "OriginCustomHeaders": [
                 {
                   "HeaderName": "x-cf-token",
-                  "HeaderValue": "efd7cd48-dc97-426b-a091-4cbe0d81447b"
+                  "HeaderValue": "347718ee-e76b-488a-961d-209f563eff79"
                 }
               ]
             }
@@ -1650,7 +1650,7 @@
     "RecordSetGroup": {
       "Type": "AWS::Route53::RecordSetGroup",
       "Properties": {
-        "HostedZoneId": "Z0787088VLUOITMYB86B",
+        "HostedZoneId": "Z033992019YVMJI94FN9V",
         "RecordSets": [
           {
             "AliasTarget": {
@@ -1675,7 +1675,7 @@
                   {
                     "Ref": "rootStackName"
                   },
-                  ".faderpro.com"
+                  ".tfs.services"
                 ]
               ]
             },
@@ -1691,7 +1691,7 @@
               },
               "HostedZoneId": "Z2FDTNDATAQYW2"
             },
-            "Name": "container.faderpro.com",
+            "Name": "nuxt.tfs.services",
             "Type": "A"
           }
         ]
@@ -1758,7 +1758,7 @@
             {
               "Ref": "rootStackName"
             },
-            ".faderpro.com"
+            ".tfs.services"
           ]
         ]
       }
@@ -1772,7 +1772,7 @@
       }
     },
     "CloudfrontDistributionCnameDomainName": {
-      "Value": "container.faderpro.com"
+      "Value": "nuxt.tfs.services"
     }
   },
   "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"Amplify\",\"createdWith\":\"7.6.22\",\"stackType\":\"hosting-ElasticContainer\",\"metadata\":{}}"

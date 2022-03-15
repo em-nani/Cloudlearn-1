@@ -1,24 +1,24 @@
 {
-  "containers": {
+  "staging": {
     "awscloudformation": {
-      "AuthRoleName": "amplify-nuxt-containers-110840-authRole",
-      "UnauthRoleArn": "arn:aws:iam::542876199144:role/amplify-nuxt-containers-110840-unauthRole",
-      "AuthRoleArn": "arn:aws:iam::542876199144:role/amplify-nuxt-containers-110840-authRole",
+      "AuthRoleName": "amplify-nuxt-staging-184353-authRole",
+      "UnauthRoleArn": "arn:aws:iam::542876199144:role/amplify-nuxt-staging-184353-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::542876199144:role/amplify-nuxt-staging-184353-authRole",
       "Region": "us-east-1",
-      "DeploymentBucketName": "amplify-nuxt-containers-110840-deployment",
-      "UnauthRoleName": "amplify-nuxt-containers-110840-unauthRole",
-      "StackName": "amplify-nuxt-containers-110840",
-      "StackId": "arn:aws:cloudformation:us-east-1:542876199144:stack/amplify-nuxt-containers-110840/e128f7a0-9e30-11ec-8c3e-12ad470c7aaf",
-      "AmplifyAppId": "d36wbpx7vcr8l1",
-      "NetworkStackS3Url": "https://s3.amazonaws.com/amplify-nuxt-containers-110840-deployment/amplify-cfn-templates/networkingStackTemplate.json"
+      "DeploymentBucketName": "amplify-nuxt-staging-184353-deployment",
+      "UnauthRoleName": "amplify-nuxt-staging-184353-unauthRole",
+      "StackName": "amplify-nuxt-staging-184353",
+      "StackId": "arn:aws:cloudformation:us-east-1:542876199144:stack/amplify-nuxt-staging-184353/b2ee8170-a3c6-11ec-9a09-0ec19e0418e1",
+      "AmplifyAppId": "d2f05hgds2l5hh",
+      "NetworkStackS3Url": "https://s3.amazonaws.com/amplify-nuxt-staging-184353-deployment/amplify-cfn-templates/networkingStackTemplate.json"
     },
     "categories": {
       "auth": {
-        "nuxt214b03c6": {}
+        "nuxteba7f827": {}
       },
       "hosting": {
         "ElasticContainer": {
-          "domain": "containers.tfs.services",
+          "domain": "nuxt.tfs.services",
           "restrictAccess": false
         }
       }
