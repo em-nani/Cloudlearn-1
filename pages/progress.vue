@@ -1,6 +1,10 @@
 <template>
   <div>
+<<<<<<< HEAD
     <h1 class="statement">Progress Report. Check back for live updates</h1>
+=======
+    <h1 class="statement">Progress Report. Check back tomorrow, for a live update soon</h1>
+>>>>>>> 4fc8b77d8cc95f23814afcf6ac2c7dd847b99445
     <p></p>
     <p class="bodytext">
       
