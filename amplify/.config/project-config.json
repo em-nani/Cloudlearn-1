@@ -1,10 +1,7 @@
 {
-<<<<<<< HEAD
   "providers": [
     "awscloudformation"
   ],
-=======
->>>>>>> 4fc8b77d8cc95f23814afcf6ac2c7dd847b99445
   "projectName": "nuxt",
   "version": "3.1",
   "frontend": "javascript",
@@ -14,15 +11,7 @@
       "SourceDir": "src",
       "DistributionDir": "dist",
       "BuildCommand": "npm run-script build",
-      "StartCommand": "npm run-script serve",
-      "ServerlessContainers": true
+      "StartCommand": "npm run-script serve"
     }
-<<<<<<< HEAD
   }
-=======
-  },
-  "providers": [
-    "awscloudformation"
-  ]
->>>>>>> 4fc8b77d8cc95f23814afcf6ac2c7dd847b99445
 }
