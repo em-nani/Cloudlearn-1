@@ -15,12 +15,6 @@
     "categories": {
       "auth": {
         "nuxteba7f827": {}
-      },
-      "hosting": {
-        "ElasticContainer": {
-          "domain": "nuxt.tfs.services",
-          "restrictAccess": false
-        }
       }
     }
   }

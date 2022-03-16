@@ -1,6 +1,6 @@
 {
   "auth": {
-    "nuxt5aec96c7": {
+    "nuxteba7f827": {
       "service": "Cognito",
       "providerPlugin": "awscloudformation",
       "dependsOn": [],
