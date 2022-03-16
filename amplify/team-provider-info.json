@@ -1,5 +1,4 @@
 {
-<<<<<<< HEAD
   "staging": {
     "awscloudformation": {
       "AuthRoleName": "amplify-nuxt-staging-184353-authRole",
@@ -20,76 +19,6 @@
       "hosting": {
         "ElasticContainer": {
           "domain": "nuxt.tfs.services",
-=======
-  "dev": {
-    "awscloudformation": {
-      "AuthRoleName": "amplify-nuxt-dev-95413-authRole",
-      "UnauthRoleArn": "arn:aws:iam::542876199144:role/amplify-nuxt-dev-95413-unauthRole",
-      "AuthRoleArn": "arn:aws:iam::542876199144:role/amplify-nuxt-dev-95413-authRole",
-      "Region": "us-east-1",
-      "DeploymentBucketName": "amplify-nuxt-dev-95413-deployment",
-      "UnauthRoleName": "amplify-nuxt-dev-95413-unauthRole",
-      "StackName": "amplify-nuxt-dev-95413",
-      "StackId": "arn:aws:cloudformation:us-east-1:542876199144:stack/amplify-nuxt-dev-95413/1ec5c760-a14b-11ec-9983-0a39022ec971",
-      "AmplifyAppId": "d2f05hgds2l5hh",
-      "NetworkStackS3Url": "https://s3.amazonaws.com/amplify-nuxt-dev-95413-deployment/amplify-cfn-templates/networkingStackTemplate.json"
-    },
-    "categories": {
-      "auth": {
-        "nuxt5aec96c7": {}
-      },
-      "hosting": {
-        "ElasticContainer": {
-          "domain": "containers.tfs.services",
-          "restrictAccess": false
-        }
-      }
-    }
-  },
-  "test": {
-    "awscloudformation": {
-      "AuthRoleName": "amplify-nuxt-test-181739-authRole",
-      "UnauthRoleArn": "arn:aws:iam::542876199144:role/amplify-nuxt-test-181739-unauthRole",
-      "AuthRoleArn": "arn:aws:iam::542876199144:role/amplify-nuxt-test-181739-authRole",
-      "Region": "us-east-1",
-      "DeploymentBucketName": "amplify-nuxt-test-181739-deployment",
-      "UnauthRoleName": "amplify-nuxt-test-181739-unauthRole",
-      "StackName": "amplify-nuxt-test-181739",
-      "StackId": "arn:aws:cloudformation:us-east-1:542876199144:stack/amplify-nuxt-test-181739/665c6b20-a31b-11ec-b6a1-12e24c93dc83",
-      "AmplifyAppId": "d2f05hgds2l5hh"
-    },
-    "categories": {
-      "auth": {
-        "nuxt5aec96c7": {}
-      },
-      "hosting": {
-        "ElasticContainer": {
-          "domain": "containers.tfs.services",
-          "restrictAccess": false
-        }
-      }
-    }
-  },
-  "developer": {
-    "awscloudformation": {
-      "AuthRoleName": "amplify-nuxt-developer-103353-authRole",
-      "UnauthRoleArn": "arn:aws:iam::542876199144:role/amplify-nuxt-developer-103353-unauthRole",
-      "AuthRoleArn": "arn:aws:iam::542876199144:role/amplify-nuxt-developer-103353-authRole",
-      "Region": "us-east-1",
-      "DeploymentBucketName": "amplify-nuxt-developer-103353-deployment",
-      "UnauthRoleName": "amplify-nuxt-developer-103353-unauthRole",
-      "StackName": "amplify-nuxt-developer-103353",
-      "StackId": "arn:aws:cloudformation:us-east-1:542876199144:stack/amplify-nuxt-developer-103353/c69e90c0-a3a3-11ec-a068-12406c9c8f89",
-      "AmplifyAppId": "d2f05hgds2l5hh"
-    },
-    "categories": {
-      "auth": {
-        "nuxt5aec96c7": {}
-      },
-      "hosting": {
-        "ElasticContainer": {
-          "domain": "containers.tfs.services",
->>>>>>> 4fc8b77d8cc95f23814afcf6ac2c7dd847b99445
           "restrictAccess": false
         }
       }
