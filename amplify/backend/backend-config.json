@@ -1,10 +1,6 @@
 {
   "auth": {
-<<<<<<< HEAD
-    "nuxteba7f827": {
-=======
     "nuxt5aec96c7": {
->>>>>>> 4fc8b77d8cc95f23814afcf6ac2c7dd847b99445
       "service": "Cognito",
       "providerPlugin": "awscloudformation",
       "dependsOn": [],
@@ -32,7 +28,6 @@
     }
   },
   "api": {
-<<<<<<< HEAD
     "cicd": {
       "service": "AppSync",
       "providerPlugin": "awscloudformation",
@@ -47,65 +42,6 @@
           "additionalAuthenticationProviders": []
         }
       }
-=======
-    "nuxt": {
-      "resourceName": "nuxt",
-      "dependsOn": [
-        {
-          "category": "",
-          "resourceName": "NetworkStack",
-          "attributes": [
-            "ClusterName",
-            "VpcId",
-            "VpcCidrBlock",
-            "SubnetIds",
-            "VpcLinkId",
-            "CloudMapNamespaceId"
-          ]
-        }
-      ],
-      "deploymentMechanism": "FULLY_MANAGED",
-      "imageSource": {
-        "type": "TEMPLATE",
-        "template": "graphql-express"
-      },
-      "restrictAccess": false,
-      "build": true,
-      "providerPlugin": "awscloudformation",
-      "service": "ElasticContainer",
-      "skipHashing": false,
-      "apiType": "GRAPHQL",
-      "iamAccessUnavailable": true
-    },
-    "cicd": {
-      "resourceName": "cicd",
-      "dependsOn": [
-        {
-          "category": "",
-          "resourceName": "NetworkStack",
-          "attributes": [
-            "ClusterName",
-            "VpcId",
-            "VpcCidrBlock",
-            "SubnetIds",
-            "VpcLinkId",
-            "CloudMapNamespaceId"
-          ]
-        }
-      ],
-      "deploymentMechanism": "FULLY_MANAGED",
-      "imageSource": {
-        "type": "TEMPLATE",
-        "template": "graphql-express"
-      },
-      "restrictAccess": false,
-      "build": true,
-      "providerPlugin": "awscloudformation",
-      "service": "ElasticContainer",
-      "skipHashing": false,
-      "apiType": "GRAPHQL",
-      "iamAccessUnavailable": true
->>>>>>> 4fc8b77d8cc95f23814afcf6ac2c7dd847b99445
     }
   },
   "hosting": {
@@ -113,11 +49,7 @@
       "resourceName": "site",
       "service": "ElasticContainer",
       "providerPlugin": "awscloudformation",
-<<<<<<< HEAD
       "domain": "container.faderpro.com",
-=======
-      "domain": "containers.tfs.services",
->>>>>>> 4fc8b77d8cc95f23814afcf6ac2c7dd847b99445
       "restrictAccess": false,
       "category": "hosting",
       "categoryPolicies": [],
@@ -143,11 +75,7 @@
         "port": 8080
       },
       "output": {},
-<<<<<<< HEAD
       "hostedZoneId": "Z0787088VLUOITMYB86B",
-=======
-      "hostedZoneId": "Z07716653GDXJUDL4P879",
->>>>>>> 4fc8b77d8cc95f23814afcf6ac2c7dd847b99445
       "iamAccessUnavailable": true
     }
   }

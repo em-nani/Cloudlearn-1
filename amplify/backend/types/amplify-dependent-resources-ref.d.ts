@@ -1,10 +1,6 @@
 export type AmplifyDependentResourcesAttributes = {
     "auth": {
-<<<<<<< HEAD
         "nuxteba7f827": {
-=======
-        "nuxt5aec96c7": {
->>>>>>> 4fc8b77d8cc95f23814afcf6ac2c7dd847b99445
             "IdentityPoolId": "string",
             "IdentityPoolName": "string",
             "UserPoolId": "string",
@@ -15,24 +11,9 @@ export type AmplifyDependentResourcesAttributes = {
         }
     },
     "api": {
-<<<<<<< HEAD
         "cicd": {
             "GraphQLAPIKeyOutput": "string",
             "GraphQLAPIIdOutput": "string",
-=======
-        "nuxt": {
-            "ServiceName": "string",
-            "ClusterName": "string",
-            "PipelineName": "string",
-            "ContainerNames": "string",
-            "GraphQLAPIEndpointOutput": "string"
-        },
-        "cicd": {
-            "ServiceName": "string",
-            "ClusterName": "string",
-            "PipelineName": "string",
-            "ContainerNames": "string",
->>>>>>> 4fc8b77d8cc95f23814afcf6ac2c7dd847b99445
             "GraphQLAPIEndpointOutput": "string"
         }
     },

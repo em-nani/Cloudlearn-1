@@ -1455,11 +1455,7 @@
         "DomainValidationOptions": [
           {
             "DomainName": "*.tfs.services",
-<<<<<<< HEAD
             "HostedZoneId": "Z033992019YVMJI94FN9V"
-=======
-            "HostedZoneId": "Z07716653GDXJUDL4P879"
->>>>>>> 4fc8b77d8cc95f23814afcf6ac2c7dd847b99445
           }
         ],
         "ValidationMethod": "DNS"
@@ -1572,11 +1568,7 @@
             "Field": "host-header",
             "HostHeaderConfig": {
               "Values": [
-<<<<<<< HEAD
                 "nuxt.tfs.services"
-=======
-                "containers.tfs.services"
->>>>>>> 4fc8b77d8cc95f23814afcf6ac2c7dd847b99445
               ]
             }
           },
@@ -1585,11 +1577,7 @@
             "HttpHeaderConfig": {
               "HttpHeaderName": "x-cf-token",
               "Values": [
-<<<<<<< HEAD
                 "347718ee-e76b-488a-961d-209f563eff79"
-=======
-                "5f13c33d-f240-4d39-8e7c-5f5d06114db4"
->>>>>>> 4fc8b77d8cc95f23814afcf6ac2c7dd847b99445
               ]
             }
           }
@@ -1605,11 +1593,7 @@
       "Properties": {
         "DistributionConfig": {
           "Aliases": [
-<<<<<<< HEAD
             "nuxt.tfs.services"
-=======
-            "containers.tfs.services"
->>>>>>> 4fc8b77d8cc95f23814afcf6ac2c7dd847b99445
           ],
           "DefaultCacheBehavior": {
             "ForwardedValues": {
@@ -1648,11 +1632,7 @@
               "OriginCustomHeaders": [
                 {
                   "HeaderName": "x-cf-token",
-<<<<<<< HEAD
                   "HeaderValue": "347718ee-e76b-488a-961d-209f563eff79"
-=======
-                  "HeaderValue": "5f13c33d-f240-4d39-8e7c-5f5d06114db4"
->>>>>>> 4fc8b77d8cc95f23814afcf6ac2c7dd847b99445
                 }
               ]
             }
@@ -1670,11 +1650,7 @@
     "RecordSetGroup": {
       "Type": "AWS::Route53::RecordSetGroup",
       "Properties": {
-<<<<<<< HEAD
         "HostedZoneId": "Z033992019YVMJI94FN9V",
-=======
-        "HostedZoneId": "Z07716653GDXJUDL4P879",
->>>>>>> 4fc8b77d8cc95f23814afcf6ac2c7dd847b99445
         "RecordSets": [
           {
             "AliasTarget": {
@@ -1715,11 +1691,7 @@
               },
               "HostedZoneId": "Z2FDTNDATAQYW2"
             },
-<<<<<<< HEAD
             "Name": "nuxt.tfs.services",
-=======
-            "Name": "containers.tfs.services",
->>>>>>> 4fc8b77d8cc95f23814afcf6ac2c7dd847b99445
             "Type": "A"
           }
         ]
@@ -1800,11 +1772,7 @@
       }
     },
     "CloudfrontDistributionCnameDomainName": {
-<<<<<<< HEAD
       "Value": "nuxt.tfs.services"
-=======
-      "Value": "containers.tfs.services"
->>>>>>> 4fc8b77d8cc95f23814afcf6ac2c7dd847b99445
     }
   },
   "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"Amplify\",\"createdWith\":\"7.6.22\",\"stackType\":\"hosting-ElasticContainer\",\"metadata\":{}}"
