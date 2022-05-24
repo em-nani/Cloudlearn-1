@@ -1,4 +1,4 @@
-# nuxt-tfs
+# nuxt-js
 
 ## Build Setup
 
